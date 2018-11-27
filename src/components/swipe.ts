@@ -1,3 +1,6 @@
+import * as $ from 'jquery';
+import 'bootstrap';
+
 class SimpleTouch {
   x:number;
   when:number;
@@ -5,6 +8,10 @@ class SimpleTouch {
     this.x = x;
     this.when = Date.now();
   }
+}
+
+enum SwipeDirection {
+  RIGHT, LEFT
 }
 
 export class Swipe {
@@ -22,6 +29,10 @@ export class Swipe {
     this.addSwipeListener();
   }
 
+  gotoSlide() {
+    $('#aurelia-swipe').carousel(2);
+  }
+
   addSwipeListener() {
 
     let elems:HTMLCollectionOf<Element> = document.getElementsByClassName('carousel');
@@ -35,7 +46,18 @@ export class Swipe {
 
         this.end = new SimpleTouch(this.endx);
         this.msg = 'are we detecting !??';
-        this.detectSwipe(this.start.x, this.end.x);
+        switch (this.isSwipe(this.start.x, this.end.x)) {
+          case SwipeDirection.LEFT:
+            // document.getElementById('aurelia-swipe').carousel('next');
+            $('#aurelia-swipe').carousel('next');
+            break;
+          case SwipeDirection.RIGHT:
+            $('#aurelia-swipe').carousel('prev');
+            break;
+          default:
+            console.log(`Unknown swipe direction. This shouldn't happen`);
+            break;
+        }
       });
 
       // el.addEventListener('touchmove', (e:TouchEvent) => {
@@ -59,7 +81,10 @@ export class Swipe {
     }
   }
 
-  public detectSwipe(pointA:number, pointB:number) {
+
+
+  public isSwipe(pointA:number, pointB:number):SwipeDirection {
+
     if ( (this.end.when - this.start.when) > 500) {
       this.msg = `too slow`;
       return;
@@ -69,8 +94,10 @@ export class Swipe {
       this.msg = `That's impossible!?!`;
     } else if (pointA > pointB) { // swipe left
       this.msg = `Detected swipe LEFT!`;
+      return SwipeDirection.LEFT;
     } else if (pointA < pointB) { // swipe right
       this.msg = `Detected swipe RIGHT!`;
+      return SwipeDirection.RIGHT;
     }
   }
 }

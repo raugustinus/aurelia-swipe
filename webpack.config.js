@@ -92,7 +92,9 @@ module.exports = ({production, server, extractCss, coverage, analyze, karma} = {
     ...when(!karma, new DuplicatePackageCheckerPlugin()),
     new AureliaPlugin(),
     new ProvidePlugin({
-      'Promise': 'bluebird'
+      'Promise': 'bluebird',
+      'jQuery': 'jquery',
+      Popper: ['popper.js', 'default']
     }),
     new ModuleDependenciesPlugin({
       'aurelia-testing': [ './compile-spy', './view-spy' ]
