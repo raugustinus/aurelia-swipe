@@ -60,7 +60,11 @@ export class Swipe {
   }
 
   public detectSwipe(pointA:number, pointB:number) {
-    this.msg = 'detecting...';
+    if ( (this.end.when - this.start.when) > 500) {
+      this.msg = `too slow`;
+      return;
+    }
+
     if (pointA == pointB) {
       this.msg = `That's impossible!?!`;
     } else if (pointA > pointB) { // swipe left
