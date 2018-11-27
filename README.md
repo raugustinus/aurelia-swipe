@@ -1,6 +1,7 @@
 # aurelia-swipe sample
 
-Sample project to try out some mobile swipe functionality.
+Sample project to try out some mobile swipe functionality using bootstrap and aurelia. Using plain javascript and the
+bootstrap carousel to swipe photos left and right.
 
 ## Interesting links
 
