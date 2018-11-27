@@ -1,11 +1,9 @@
-import * as $ from 'jquery';
-
 export class Swipe {
 
+  swipeTrack;
   msg:string = 'nothing yet..';
 
   attached() {
-    console.log(`Swiping shizzle: `);
     this.addSwipeListener();
   }
 
@@ -15,11 +13,13 @@ export class Swipe {
     for (let i=0;i<elems.length;i++) {
 
       let el:Element = elems.item(i);
-      console.log(`found one.. > ${el.id}`);
 
-      el.addEventListener('touchstart', e => {
+      el.addEventListener('touchstart', (e:TouchEvent) => {
         e.preventDefault();
         this.msg = `can't touch this.`;
+        for(let i=0;i<e.touches.length;i++) {
+          this.msg = `x = ${e.touches.item(i).clientX}`;
+        }
       }, false);
 
       el.addEventListener('touchend', e => {
@@ -32,23 +32,12 @@ export class Swipe {
         this.msg = 'touch cancelled..';
       });
 
-      el.addEventListener('touchmove', e => {
+      el.addEventListener('touchmove', (e:TouchEvent) => {
         this.msg = `we've been moved..`;
+        for(let i=0;i<e.touches.length;i++) {
+          this.msg = `x = ${e.touches.item(i).clientX}`;
+        }
       }, false);
     }
-  }
-
-  handleEnd() {
-    console.log(`We're done touching..`);
-
-  }
-
-  handleCancel() {
-    console.log(`Cancelled touch?!`);
-    this.msg = 'bla..';
-  }
-
-  handleMove() {
-    this.msg = 'handling move..'
   }
 }
