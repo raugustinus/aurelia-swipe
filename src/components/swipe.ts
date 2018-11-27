@@ -19,18 +19,28 @@ export class Swipe {
 
       el.addEventListener('touchstart', e => {
         e.preventDefault();
-        console.log('we have been touched..');
         this.msg = `can't touch this.`;
       }, false);
-      // el.addEventListener('touchend', this.handleEnd);
-      // el.addEventListener('touchcancel', this.handleCancel);
-      el.addEventListener('touchmove', this.handleMove, false);
+
+      el.addEventListener('touchend', e => {
+        e.preventDefault();
+        this.msg = `touchend..`;
+      });
+
+      el.addEventListener('touchcancel', e => {
+        e.preventDefault();
+        this.msg = 'touch cancelled..';
+      });
+
+      el.addEventListener('touchmove', e => {
+        this.msg = `we've been moved..`;
+      }, false);
     }
   }
 
   handleEnd() {
     console.log(`We're done touching..`);
-    this.msg = `touchend..`;
+
   }
 
   handleCancel() {
