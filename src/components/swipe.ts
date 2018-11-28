@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 import 'bootstrap';
 
-class SimpleTouch {
+class PointInTime {
   x:number;
   when:number;
   constructor(x:number) {
@@ -20,10 +20,13 @@ export class Swipe {
   startx:number = 0;
   endx:number = 0;
 
-  start:SimpleTouch = null;
-  end:SimpleTouch = null;
+  start:PointInTime = null;
+  end:PointInTime = null;
 
   msg:string = 'nothing yet..';
+
+  dragEnd: PointInTime;
+  dragStart: PointInTime;
 
   attached() {
     this.addSwipeListener();
@@ -44,11 +47,9 @@ export class Swipe {
         this.aantal = e.touches.length;
         this.msg = `touchend -> aantal touches: ${e.touches.length}`;
 
-        this.end = new SimpleTouch(this.endx);
-        this.msg = 'are we detecting !??';
+        this.end = new PointInTime(this.endx);
         switch (this.isSwipe(this.start.x, this.end.x)) {
           case SwipeDirection.LEFT:
-            // document.getElementById('aurelia-swipe').carousel('next');
             $('#aurelia-swipe').carousel('next');
             break;
           case SwipeDirection.RIGHT:
@@ -58,20 +59,35 @@ export class Swipe {
             console.log(`Unknown swipe direction. This shouldn't happen`);
             break;
         }
+        e.stopPropagation();
       });
 
-      // el.addEventListener('touchmove', (e:TouchEvent) => {
-      //   this.msg = `we've been moved..`;
-      //   for(let i=0;i<e.touches.length;i++) {
-      //     this.msg = `move x = ${e.touches.item(i).clientX}`;
-      //   }
-      // }, false);
+      el.addEventListener('dragstart', (e:MouseEvent) => {
+        this.dragStart = new PointInTime(e.screenX);
+        e.stopPropagation();
+      });
+
+      el.addEventListener('dragend', (e:MouseEvent) => {
+        this.dragEnd = new PointInTime(e.screenX);
+        switch (this.isMouseSwipe(this.dragStart.x, this.dragEnd.x)) {
+          case SwipeDirection.LEFT:
+            $('#aurelia-swipe').carousel('next');
+            break;
+          case SwipeDirection.RIGHT:
+            $('#aurelia-swipe').carousel('prev');
+            break;
+          default:
+            console.log(`Unknown swipe direction. This shouldn't happen`);
+            break;
+        }
+        e.stopPropagation();
+      });
 
       el.addEventListener('touchstart', (e:TouchEvent) => {
         e.preventDefault();
         this.aantal = e.touches.length;
         this.startx = e.touches[0].clientX;
-        this.start = new SimpleTouch(e.touches[0].clientX); // don't care about your other fingers in e.touches
+        this.start = new PointInTime(e.touches[0].clientX); // don't care about your other fingers in e.touches
       }, false);
 
       el.addEventListener('touchcancel', e => {
@@ -81,7 +97,22 @@ export class Swipe {
     }
   }
 
+  public isMouseSwipe(pointA:number, pointB:number):SwipeDirection {
 
+    if ( (this.dragEnd.when - this.dragStart.when) > 500) {
+      this.msg = 'Dragged too slow..';
+    }
+
+    if (pointA == pointB) {
+      this.msg = 'no movement..?!';
+    } else if (pointA > pointB) {
+      this.msg = 'Detected drag left';
+      return SwipeDirection.LEFT;
+    } else if (pointA < pointB) {
+      this.msg = 'Detected drag right';
+      return SwipeDirection.RIGHT;
+    }
+  }
 
   public isSwipe(pointA:number, pointB:number):SwipeDirection {
 
