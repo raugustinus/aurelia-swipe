@@ -114,6 +114,10 @@ export class Swipe {
     }
   }
 
+  testButton(val:string) {
+    console.log(`test button ${val}`);
+  }
+
   public isSwipe(pointA:number, pointB:number):SwipeDirection {
 
     if ( (this.end.when - this.start.when) > 500) {
